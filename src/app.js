@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 
 const { v4: uuid } = require('uuid');
+const { json } = require("express");
 
 const app = express();
 
@@ -15,14 +16,10 @@ app.get("/repositories", (request, response) => {
 });
 
 app.post("/repositories", (request, response) => {
-  const { body } = request;
-
   const newRepository = {
     id: uuid(),
-    url: body.url,
-    title: body.title,
-    techs: body.techs,
-    likes: 0
+    likes: 0,
+    ...request.body
   }
 
   repositories.push(newRepository)
@@ -31,7 +28,14 @@ app.post("/repositories", (request, response) => {
 });
 
 app.put("/repositories/:id", (request, response) => {
-  // TODO
+  const foundIndex = repositories.findIndex(repo => repo.id === request.params.id);
+
+  repositories[foundIndex] = {
+    ...repositories[foundIndex],
+    ...request.body
+  }
+
+  return response.json(repositories[foundIndex])
 });
 
 app.delete("/repositories/:id", (request, response) => {
