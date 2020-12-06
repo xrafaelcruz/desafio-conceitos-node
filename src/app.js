@@ -15,10 +15,14 @@ app.get("/repositories", (_, response) => {
 });
 
 app.post("/repositories", (request, response) => {
+  const { url, title, techs } = request.body;
+
   const newRepository = {
     id: uuid(),
-    likes: 0,
-    ...request.body
+    url,
+    title,
+    techs,
+    likes: 0
   }
 
   repositories.push(newRepository)
@@ -27,18 +31,22 @@ app.post("/repositories", (request, response) => {
 });
 
 app.put("/repositories/:id", (request, response) => {
-  const foundIndex = repositories.findIndex(repo => repo.id === request.params.id);
+  const { id } = request.params;
+
+  const foundIndex = repositories.findIndex(repo => repo.id === id);
 
   if (foundIndex < 0) {
     return response.status(400).json({ error: 'repository not found!' })
   }
 
-  const repo = repositories[foundIndex]
+  const { url, title, techs } = request.body
 
   const updatedRepo = {
-    ...repo,
-    ...request.body,
-    likes: repo.likes
+    id,
+    url,
+    title,
+    techs,
+    likes: repositories[foundIndex].likes
   }
 
   repositories[foundIndex] = updatedRepo
